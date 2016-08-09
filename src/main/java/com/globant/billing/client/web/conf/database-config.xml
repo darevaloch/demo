@@ -1,0 +1,55 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- DataSource -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="${driverClassName}" />
+		<property name="jdbcUrl" value="${jdbc_url}" />
+		<property name="user" value="${jdbc_username}" />
+		<property name="password" value="${jdbc_password}" />
+
+		<property name="acquireIncrement" value="${connection.acquireIncrement}" />
+        <property name="minPoolSize" value="${connection.minPoolSize}" />
+        <property name="maxPoolSize" value="${connection.maxPoolSize}" />
+        <property name="maxIdleTime" value="${connection.maxIdleTime}" />
+	</bean>
+	
+	<!-- Hibernate SessionFactory -->
+    <bean id="sessionFactory"
+        class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"></property>
+        <property name="configLocation" value="classpath:com/globant/billing/client/web/conf/hibernate.cfg.xml" />
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">${hibernate.dialect}</prop>
+                <prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
+                <prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
+                <prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+            </props>
+        </property>
+        <!-- Usado para la persistencia con Anotaciones -->
+<!--         <property name="packagesToScan" value="com.globant.billing.client.web.model"></property> -->
+    </bean>
+    
+    <!-- Transaction -->
+    <tx:annotation-driven />
+    <bean id="transactionManager"
+        class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+ 
+<!-- Usado para transactionManager con Anotaciones -->
+<!-- 	<tx:annotation-driven transaction-manager="transactionManager" /> -->
+<!-- 	<bean id="userDao" class="com.globant.billing.client.web.dao.UserDAOImpl"> -->
+<!--     <constructor-arg> -->
+<!--         <ref bean="sessionFactory" /> -->
+<!--     </constructor-arg> -->
+<!-- </bean> -->
+
+</beans>
